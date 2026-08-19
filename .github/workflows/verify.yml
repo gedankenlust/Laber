@@ -1,0 +1,21 @@
+name: Verify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Verify source
+        run: ./scripts/verify.sh
+      - name: Build macOS app
+        run: ./scripts/build-macos.sh

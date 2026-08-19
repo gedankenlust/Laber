@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark" data-ui-lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src http://localhost:11434; font-src 'self'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-src 'none'">
+  <title>Laber</title>
+  <link rel="icon" type="image/png" href="assets/app-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Business Memory / Glossar Modal -->
+  <div id="glossaryModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="glossaryTitle">
+    <div class="modal-card" tabindex="-1">
+      <div class="modal-header">
+        <h2 id="glossaryTitle" class="modal-title-with-icon">
+          <svg class="lucide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></svg>
+          <span>FIRMEN-GEDÄCHTNIS & REGELLISTE</span>
+        </h2>
+        <button id="closeGlossaryBtn" class="close-btn" aria-label="Schließen">&times;</button>
+      </div>
+      <p id="glossaryDesc" class="glossary-desc-text">
+        Hier bringst du der KI feste Regeln bei. Zum Beispiel wie Produktnamen, Fachbegriffe oder Kundenanreden in deiner Firma übersetzt werden müssen. Alle Daten bleiben 100% lokal auf deinem Mac.
+      </p>
+
+      <div class="glossary-examples">
+        <div class="example-chip">
+          <svg class="lucide-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          <span id="exChip1"><strong>Beispiel 1:</strong> "DeepL" ➔ "Laber" (Eigene Markennamen schützen)</span>
+        </div>
+        <div class="example-chip">
+          <svg class="lucide-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          <span id="exChip2"><strong>Beispiel 2:</strong> "Dear Client" ➔ "Sehr geehrte/r Kundin/Kunde" (Firmentonfall)</span>
+        </div>
+      </div>
+
+      <div class="glossary-form">
+        <div class="glossary-field-group">
+          <label id="lblGlossarySrc" class="field-label">ORIGINALBEGRIFF / SATZ</label>
+          <input type="text" id="glossarySrc" class="glossary-input" placeholder="z.B. Dear Customer">
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblGlossaryTgt" class="field-label">SO SOLL ES IMMER HEISSEN</label>
+          <input type="text" id="glossaryTgt" class="glossary-input" placeholder="z.B. Sehr geehrte/r Kunde/in">
+        </div>
+        <button id="addGlossaryBtn" class="btn-primary" style="padding: 10px 18px; align-self: flex-end;">Regel speichern</button>
+      </div>
+
+      <div id="glossaryList" class="glossary-list">
+        <!-- Dynamische Einträge -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Arbeitsbereich erstellen / bearbeiten -->
+  <div id="workspaceModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="workspaceModalTitle">
+    <form id="workspaceForm" class="modal-card compact-modal">
+      <div class="modal-header">
+        <h2 id="workspaceModalTitle">ARBEITSBEREICH</h2>
+        <button id="closeWorkspaceModalBtn" type="button" class="close-btn" aria-label="Schließen">&times;</button>
+      </div>
+      <div class="modal-form-grid">
+        <div class="glossary-field-group full-width">
+          <label id="lblWorkspaceName" for="workspaceName" class="field-label">NAME</label>
+          <input id="workspaceName" class="glossary-input" type="text" maxlength="80" required placeholder="z.B. Müller GmbH">
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblWorkspaceType" for="workspaceType" class="field-label">TYP</label>
+          <select id="workspaceType" class="custom-select">
+            <option id="optWorkspaceCustomer" value="customer">Kunde</option>
+            <option id="optWorkspaceProject" value="project">Projekt</option>
+            <option id="optWorkspaceGeneral" value="general">Allgemein</option>
+          </select>
+        </div>
+        <div id="fieldWorkspaceCustomer" class="glossary-field-group hidden">
+          <label id="lblWorkspaceCustomer" for="workspaceCustomer" class="field-label">ZUGEHÖRIGER KUNDE</label>
+          <select id="workspaceCustomer" class="custom-select">
+            <option value="">Ohne Kunde</option>
+          </select>
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblWorkspaceSource" for="workspaceSource" class="field-label">STANDARD-QUELLSPRACHE</label>
+          <select id="workspaceSource" class="custom-select">
+            <option value="auto">Auto-Erkennung</option>
+            <option value="de">Deutsch</option>
+            <option value="en">Englisch</option>
+            <option value="fa">Farsi (Persisch)</option>
+            <option value="fr">Französisch</option>
+            <option value="es">Spanisch</option>
+          </select>
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblWorkspaceTarget" for="workspaceTarget" class="field-label">STANDARD-ZIELSPRACHE</label>
+          <select id="workspaceTarget" class="custom-select">
+            <option value="de">Deutsch</option>
+            <option value="en">Englisch</option>
+            <option value="fa">Farsi (Persisch)</option>
+            <option value="fr">Französisch</option>
+            <option value="es">Spanisch</option>
+          </select>
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblWorkspaceCategory" for="workspaceCategory" class="field-label">STANDARD-KONTEXT</label>
+          <select id="workspaceCategory" class="custom-select">
+            <option value="general">Allgemein</option>
+            <option value="email">E-Mail & B2B Kommunikation</option>
+            <option value="email_reply">E-Mail Antwort-Entwurf</option>
+            <option value="academic">Wissenschaft & Technik</option>
+            <option value="product">Produkt & Marketing</option>
+            <option value="summary">Zusammenfassendes Protokoll</option>
+          </select>
+        </div>
+        <div class="glossary-field-group">
+          <label id="lblWorkspaceTone" for="workspaceTone" class="field-label">STANDARD-TONALITÄT</label>
+          <select id="workspaceTone" class="custom-select">
+            <option value="natural">Natürlich</option>
+            <option value="formal">Formell (B2B Sie)</option>
+            <option value="informal">Informell (Du)</option>
+            <option value="creative">Kreativ</option>
+            <option value="direct">Direkt & Präzise</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer split-footer">
+        <button id="deleteWorkspaceBtn" type="button" class="btn-danger hidden">Arbeitsbereich löschen</button>
+        <div class="modal-footer-actions">
+          <button id="cancelWorkspaceBtn" type="button" class="btn-secondary">Abbrechen</button>
+          <button id="saveWorkspaceBtn" type="submit" class="btn-primary">Speichern</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Session erstellen -->
+  <div id="sessionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sessionModalTitle">
+    <form id="sessionForm" class="modal-card compact-modal session-modal-card">
+      <div class="modal-header">
+        <h2 id="sessionModalTitle">NEUE SESSION</h2>
+        <button id="closeSessionModalBtn" type="button" class="close-btn" aria-label="Schließen">&times;</button>
+      </div>
+      <div class="glossary-field-group">
+        <label id="lblSessionName" for="sessionName" class="field-label">SESSION-NAME</label>
+        <input id="sessionName" class="glossary-input" type="text" maxlength="100" required placeholder="z.B. Angebots-E-Mail">
+      </div>
+      <div class="modal-footer-actions">
+        <button id="cancelSessionBtn" type="button" class="btn-secondary">Abbrechen</button>
+        <button id="saveSessionBtn" type="submit" class="btn-primary">Erstellen</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- App Settings Modal (Allgemeine Einstellungen) -->
+  <div id="appSettingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="appSettingsTitle">
+    <div class="modal-card settings-modal-card" tabindex="-1">
+      <div class="modal-header">
+        <h3 id="appSettingsTitle">ALLGEMEINE EINSTELLUNGEN</h3>
+        <button id="closeAppSettingsBtn" class="modal-close-btn" aria-label="Schließen">&times;</button>
+      </div>
+      <div class="settings-modal-body">
+        <!-- Setting 1: Menubar -->
+        <div class="settings-group">
+          <label class="settings-toggle-row">
+            <span class="settings-label-col">
+              <strong id="lblSettingMenuBar">Menüleisten-Symbol</strong>
+              <span id="descSettingMenuBar" class="settings-help">Symbol in der oberen Mac-Menüleiste (neben der Uhrzeit) anzeigen</span>
+            </span>
+            <input id="settingMenuBarToggle" type="checkbox" class="custom-toggle" checked>
+          </label>
+        </div>
+
+        <!-- Setting 2: Background Lifecycle -->
+        <div class="settings-group">
+          <label class="settings-toggle-row">
+            <span class="settings-label-col">
+              <strong id="lblSettingBackground">Hintergrundbetrieb</strong>
+              <span id="descSettingBackground" class="settings-help">Beim Schließen des Fensters im Hintergrund geöffnet bleiben</span>
+            </span>
+            <input id="settingBackgroundToggle" type="checkbox" class="custom-toggle" checked>
+          </label>
+        </div>
+
+        <!-- Setting 3: Auto-Translate on Paste -->
+        <div class="settings-group">
+          <label class="settings-toggle-row">
+            <span class="settings-label-col">
+              <strong id="lblSettingAutoTranslate">Sofort übersetzen beim Einfügen</strong>
+              <span id="descSettingAutoTranslate" class="settings-help">Startet die Übersetzung direkt nach Klick auf „Einfügen“ oder Datei-Ablegen</span>
+            </span>
+            <input id="settingAutoTranslateToggle" type="checkbox" class="custom-toggle">
+          </label>
+        </div>
+
+        <!-- Setting 4: Ollama Models -->
+        <div class="settings-group">
+          <label for="settingTranslationModel" id="lblSettingTranslationModel" class="field-label">ÜBERSETZUNGSMODELL</label>
+          <input id="settingTranslationModel" type="text" class="custom-input" value="translategemma:latest" placeholder="z.B. translategemma:latest" list="ollamaModelsList">
+          <span id="descSettingTranslationModel" class="settings-help">Lokales Ollama-Modell für Übersetzungen</span>
+        </div>
+        <div class="settings-group">
+          <label for="settingWritingModel" id="lblSettingWritingModel" class="field-label">SCHREIBMODELL</label>
+          <input id="settingWritingModel" type="text" class="custom-input" value="gemma3:4b" placeholder="z.B. gemma3:4b" list="ollamaModelsList">
+          <span id="descSettingWritingModel" class="settings-help">Lokales Ollama-Modell für Polieren und Antwortentwürfe</span>
+          <datalist id="ollamaModelsList"></datalist>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="saveAppSettingsBtn" type="button" class="btn-primary">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Palette (Cmd + K Schnellwechsler) -->
+  <div id="commandPaletteModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Schnellwechsler">
+    <div class="modal-card command-palette-card" tabindex="-1">
+      <div class="command-palette-header">
+        <svg class="lucide-icon palette-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="commandPaletteInput" class="palette-input" type="text" placeholder="Arbeitsbereich, Session oder Aktion suchen... (Cmd+K)" autocomplete="off">
+        <kbd class="palette-kbd">ESC</kbd>
+      </div>
+      <div id="commandPaletteList" class="command-palette-list" role="listbox" aria-label="Ergebnisse">
+        <!-- Dynamische Einträge -->
+      </div>
+      <div class="command-palette-footer">
+        <span id="paletteFooterHint"><kbd>↑</kbd> <kbd>↓</kbd> Navigieren <kbd>↵</kbd> Auswählen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-viewport">
+    <!-- Top Header Bar -->
+    <header class="header-bar" role="banner">
+      <div class="brand-group">
+        <img src="assets/logo.svg" alt="Laber Logo" class="brand-logo">
+        <span id="backendStatusDot" class="status-dot online" title="Ollama KI-Schnittstelle aktiv"></span>
+        <span class="engine-badge">translategemma</span>
+        <div class="mode-switcher" role="tablist" aria-label="Arbeitsmodus">
+          <button id="btnModeTranslate" type="button" class="mode-pill active" role="tab" aria-selected="true">
+            <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <span id="lblModeTranslate">Übersetzen</span>
+          </button>
+          <button id="btnModePolish" type="button" class="mode-pill" role="tab" aria-selected="false">
+            <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+            <span id="lblModePolish">Text polieren</span>
+          </button>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="commandPaletteBtn" class="header-btn" title="Schnellwechsler (Cmd+K)" aria-label="Schnellwechsler">
+          <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span class="cmd-k-badge">⌘K</span>
+        </button>
+        <button id="glossaryBtn" class="header-btn" title="Firmen-Gedächtnis & Regelliste">
+          <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></svg>
+          <span id="glossaryBtnLabel">Gedächtnis</span>
+        </button>
+        <button id="appSettingsBtn" class="header-btn" title="Allgemeine Einstellungen" aria-label="Allgemeine Einstellungen">
+          <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="appSettingsBtnLabel">Optionen</span>
+        </button>
+        <button id="langToggle" class="header-btn" aria-label="Sprache umschalten / Switch language" title="Sprache umschalten / Switch language">
+          <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          <span id="langToggleText" style="font-family: var(--font-mono); font-size: 0.8rem;">DE</span>
+        </button>
+        <button id="themeToggle" class="header-btn" aria-label="Farbmodus umschalten">
+          <span class="theme-icon sun">
+            <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </span>
+          <span class="theme-icon moon">
+            <svg class="lucide-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace-shell">
+      <aside class="workspace-sidebar" aria-label="Arbeitsbereiche und Sessions">
+        <div class="sidebar-header">
+          <h2 id="titleWorkspaces">ARBEITSBEREICHE</h2>
+          <button id="newWorkspaceBtn" class="sidebar-add-btn" title="Neuer Arbeitsbereich" aria-label="Neuer Arbeitsbereich">+</button>
+        </div>
+        <div id="workspaceList" class="workspace-list"></div>
+        <div class="sidebar-data-actions">
+          <button id="exportDataBtn" class="sidebar-data-btn">Export</button>
+          <button id="importDataBtn" class="sidebar-data-btn">Import</button>
+          <input id="importDataInput" type="file" accept="application/json,.json" hidden>
+        </div>
+      </aside>
+
+      <div class="workspace-content">
+        <section class="active-context-bar" aria-label="Aktiver Arbeitsbereich">
+          <div class="active-context-copy">
+            <span id="activeWorkspaceType" class="context-eyebrow">KUNDE</span>
+            <div class="active-context-title-row">
+              <h1 id="activeWorkspaceName">Allgemein</h1>
+              <span class="context-divider">/</span>
+              <span id="activeSessionName">Neue Session</span>
+            </div>
+          </div>
+          <div class="active-context-actions">
+            <button id="newSessionBtn" class="btn-secondary context-action-btn">+ Session</button>
+            <button id="chatContextBtn" class="btn-secondary context-action-btn" type="button" aria-pressed="false">Kontext aus</button>
+            <button id="deleteSessionBtn" class="btn-secondary context-action-btn" title="Aktuelle Session löschen">Session löschen</button>
+            <button id="workspaceSettingsBtn" class="btn-secondary context-action-btn">Einstellungen</button>
+          </div>
+        </section>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+      <!-- Toolbar Controls -->
+      <section class="toolbar-card" aria-label="Übersetzungseinstellungen">
+        <div class="select-field">
+          <label for="sourceLang" id="lblSourceLang" class="field-label">QUELLSPRACHE</label>
+          <select id="sourceLang" class="custom-select">
+            <option id="optSourceAuto" value="auto" selected>Auto-Erkennung</option>
+            <option id="optSourceDe" value="de">Deutsch</option>
+            <option id="optSourceEn" value="en">Englisch</option>
+            <option id="optSourceFa" value="fa">Farsi (Persisch)</option>
+            <option id="optSourceFr" value="fr">Französisch</option>
+            <option id="optSourceEs" value="es">Spanisch</option>
+          </select>
+          <span id="detectedLanguageBadge" class="detected-language-badge hidden">Deutsch erkannt</span>
+        </div>
+
+        <button id="swapLangsBtn" class="swap-btn" title="Sprachen tauschen" aria-label="Sprachen tauschen">
+          <svg class="lucide-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+        </button>
+
+        <div id="fieldTargetLang" class="select-field">
+          <label for="targetLang" id="lblTargetLang" class="field-label">ZIELSPRACHE</label>
+          <select id="targetLang" class="custom-select">
+            <option id="optTargetEn" value="en" selected>Englisch</option>
+            <option id="optTargetDe" value="de">Deutsch</option>
+            <option id="optTargetFa" value="fa">Farsi (Persisch)</option>
+            <option id="optTargetFr" value="fr">Französisch</option>
+            <option id="optTargetEs" value="es">Spanisch</option>
+          </select>
+        </div>
+
+        <div id="fieldCategory" class="select-field">
+          <label for="categorySelect" id="lblCategory" class="field-label">TEXT-TYP / KONTEXT</label>
+          <select id="categorySelect" class="custom-select">
+            <option id="optCatGeneral" value="general" selected>Allgemein</option>
+            <option id="optCatEmail" value="email">E-Mail & B2B Kommunikation</option>
+            <option id="optCatEmailReply" value="email_reply">E-Mail Antwort-Entwurf</option>
+            <option id="optCatAcademic" value="academic">Wissenschaft & Technik</option>
+            <option id="optCatProduct" value="product">Produkt & Marketing</option>
+            <option id="optCatSummary" value="summary">Zusammenfassendes Protokoll</option>
+          </select>
+        </div>
+
+        <div id="fieldTone" class="select-field tone-field">
+          <label for="toneSelect" id="lblTone" class="field-label">TONALITÄT</label>
+          <select id="toneSelect" class="custom-select">
+            <option id="optToneNatural" value="natural" selected>Natürlich</option>
+            <option id="optToneFormal" value="formal">Formell (B2B Sie)</option>
+            <option id="optToneInformal" value="informal">Informell (Du)</option>
+            <option id="optToneCreative" value="creative">Kreativ</option>
+            <option id="optToneDirect" value="direct">Direkt & Präzise</option>
+          </select>
+        </div>
+
+        <div id="fieldPolishStyle" class="select-field hidden">
+          <label for="polishStyleSelect" id="lblPolishStyle" class="field-label">POLIER-STIL</label>
+          <select id="polishStyleSelect" class="custom-select">
+            <option value="formal" selected>B2B Formell & Höflich</option>
+            <option value="concise">Kompakt & Prägnant</option>
+            <option value="grammar">Grammatik & Korrektur</option>
+            <option value="natural">Flüssig & Natürlich</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Translation Workspace Split -->
+      <section class="editor-grid">
+        <!-- Input Box -->
+        <div id="inputCard" class="editor-card input-card">
+          <div class="card-header">
+            <span id="titleInput" class="card-title">EINGABE</span>
+            <span id="charCount" class="card-meta">0 Zeichen</span>
+          </div>
+          <div class="input-relative-wrapper">
+            <textarea id="inputText" placeholder="Text eingeben... (CMD + ENTER zum Übersetzen)" rows="8"></textarea>
+            <div id="dropOverlay" class="drop-overlay hidden">
+              <div class="drop-overlay-content">
+                <svg class="lucide-icon drop-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
+                <strong id="dropOverlayTitle">Datei hier ablegen</strong>
+                <span id="dropOverlaySub">.txt, .md, .csv, .json, .srt</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="input-actions-left">
+              <button id="clearInputBtn" class="btn-secondary">Text löschen</button>
+              <button id="pasteInputBtn" class="btn-secondary" title="Aus Zwischenablage einfügen">
+                <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                <span id="lblPasteBtn">Einfügen</span>
+              </button>
+              <button id="uploadFileBtn" class="btn-secondary" title="Textdatei hochladen">
+                <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                <span id="lblUploadBtn">Datei</span>
+              </button>
+              <input id="fileUploadInput" type="file" accept=".txt,.md,.json,.csv,.srt,.html,.js,.py" hidden>
+            </div>
+            <button id="translateBtn" class="btn-primary">
+              <span id="btnTranslateLabel" class="btn-label">ÜBERSETZEN</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Box -->
+        <div class="editor-card output-card">
+          <div class="card-header">
+            <span id="titleOutput" class="card-title">ÜBERSETZUNG</span>
+            <span id="statusIndicator" class="card-meta status-ready">Bereit</span>
+          </div>
+          <div class="output-container">
+            <textarea id="outputText" readonly placeholder="Übersetzung erscheint hier..." rows="8"></textarea>
+            <div id="loadingSpinner" class="loading-state hidden">
+              <div class="pulse-loader"></div>
+              <span id="loadingLabel" class="loading-label">Verarbeite mit translategemma...</span>
+            </div>
+          </div>
+          <div class="card-footer output-card-footer">
+            <div class="quick-refine-group">
+              <span id="lblQuickRefine" class="quick-refine-label">Schnellaktionen:</span>
+              <button id="btnRefineFormal" class="btn-refine" title="Höflicher und formeller formulieren">
+                <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span id="lblRefineFormal">Formeller</span>
+              </button>
+              <button id="btnRefineShort" class="btn-refine" title="Kompakter und präziser zusammenfassen">
+                <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <span id="lblRefineShort">Kompakter</span>
+              </button>
+              <button id="btnRefineReply" class="btn-refine" title="Passende Antwort in Zielsprache entwerfen">
+                <svg class="lucide-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+                <span id="lblRefineReply">Antwort</span>
+              </button>
+            </div>
+            <button id="copyOutputBtn" class="btn-secondary">In Zwischenablage kopieren</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-card" aria-label="Übersetzungsverlauf">
+        <div class="history-header">
+          <div class="history-title-group">
+            <h2 id="titleHistory">VERLAUF</h2>
+            <span id="historyCountBadge" class="count-badge">0</span>
+          </div>
+          <div class="history-actions">
+            <input type="text" id="historySearch" class="search-input" placeholder="Verlauf durchsuchen...">
+            <button id="clearHistoryBtn" class="btn-danger">Session leeren</button>
+          </div>
+        </div>
+        <div id="historyList" class="history-list">
+          <div id="emptyHistory" class="empty-history">
+            <p id="emptyHistoryText" class="empty-history-lead">Diese Session enthält noch keine Übersetzungen</p>
+            <div class="starter-templates-group">
+              <span id="lblStarterTemplates" class="starter-templates-heading">Oder starte direkt mit einer Vorlage:</span>
+              <div class="starter-templates-grid">
+                <button type="button" class="starter-template-card" data-template="email">
+                  <span class="starter-card-icon">✉️</span>
+                  <span class="starter-card-text">
+                    <strong id="tplEmailTitle">Kunden-Mail</strong>
+                    <span id="tplEmailDesc">B2B Angebot & Rückfrage (Formell)</span>
+                  </span>
+                </button>
+                <button type="button" class="starter-template-card" data-template="academic">
+                  <span class="starter-card-icon">🔬</span>
+                  <span class="starter-card-text">
+                    <strong id="tplAcademicTitle">Technischer Text</strong>
+                    <span id="tplAcademicDesc">Spezifikation & Fachbegriffe</span>
+                  </span>
+                </button>
+                <button type="button" class="starter-template-card" data-template="summary">
+                  <span class="starter-card-icon">📋</span>
+                  <span class="starter-card-text">
+                    <strong id="tplSummaryTitle">Zusammenfassung</strong>
+                    <span id="tplSummaryDesc">Kompakte Stichpunkte & Notizen</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo">
+      <span id="footerPrivacy">Laber Enterprise • 100% Lokale Privatsphäre</span>
+      <span id="footerEngine">Ollama Engine • translategemma:latest</span>
+    </footer>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
