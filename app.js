@@ -501,6 +501,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
   }
 
+  function lucideSvg(name, size = 16) {
+    const svgs = {
+      'mail': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+      'microscope': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="m14 22 .77-3.85a4 4 0 0 0-.77-3.15l-3-4a4 4 0 0 0-4.8-.85l-.2.1a4 4 0 0 0-2 3.45V22"/><path d="m9 8 3 3"/><path d="m14 13 3-3"/><path d="m20 4-4 4"/></svg>`,
+      'clipboard-list': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>`,
+      'building-2': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>`,
+      'message-square': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+      'message-square-plus': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v6"/><path d="M9 10h6"/></svg>`,
+      'folder-plus': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>`,
+      'brain': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></svg>`,
+      'languages': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`,
+      'sun-moon': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></svg>`,
+      'download': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`,
+      'settings': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+      'trash-2': `<svg class="lucide-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`
+    };
+    return svgs[name] || '';
+  }
+
   function showModal(modal, focusTarget = null) {
     modalReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     modal.classList.remove('hidden');
@@ -1648,7 +1667,7 @@ document.addEventListener('DOMContentLoaded', () => {
       remove.type = 'button';
       remove.className = 'btn-icon-danger';
       remove.title = currentUILang === 'de' ? 'Löschen' : 'Delete';
-      remove.textContent = '×';
+      remove.innerHTML = lucideSvg('trash-2', 13);
       remove.addEventListener('click', () => {
         getActiveWorkspace().glossary.splice(index, 1);
         saveState();
@@ -1693,9 +1712,9 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.className = 'starter-templates-grid';
 
       const tpls = [
-        { type: 'email', icon: '✉️', title: t.tplEmailTitle, desc: t.tplEmailDesc },
-        { type: 'academic', icon: '🔬', title: t.tplAcademicTitle, desc: t.tplAcademicDesc },
-        { type: 'summary', icon: '📋', title: t.tplSummaryTitle, desc: t.tplSummaryDesc }
+        { type: 'email', iconSvg: lucideSvg('mail', 20), title: t.tplEmailTitle, desc: t.tplEmailDesc },
+        { type: 'academic', iconSvg: lucideSvg('microscope', 20), title: t.tplAcademicTitle, desc: t.tplAcademicDesc },
+        { type: 'summary', iconSvg: lucideSvg('clipboard-list', 20), title: t.tplSummaryTitle, desc: t.tplSummaryDesc }
       ];
 
       tpls.forEach((tpl) => {
@@ -1703,7 +1722,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.type = 'button';
         card.className = 'starter-template-card';
         card.innerHTML = `
-          <div class="starter-card-icon">${tpl.icon}</div>
+          <div class="starter-card-icon">${tpl.iconSvg}</div>
           <div class="starter-card-text">
             <strong>${tpl.title}</strong>
             <span>${tpl.desc}</span>
@@ -1738,7 +1757,7 @@ document.addEventListener('DOMContentLoaded', () => {
       remove.type = 'button';
       remove.className = 'btn-icon-danger delete-history-btn';
       remove.title = currentUILang === 'de' ? 'Löschen' : 'Delete';
-      remove.textContent = '×';
+      remove.innerHTML = lucideSvg('trash-2', 13);
       remove.addEventListener('click', (event) => {
         event.stopPropagation();
         const session = getActiveSession();
@@ -2779,7 +2798,7 @@ Refined result in ${targetName}:`;
           sub: workspace.parentCustomerId
             ? `${t.workspaceTypes[workspace.type]} · ${state.workspaces.find((item) => item.id === workspace.parentCustomerId)?.name || ''}`
             : (t.workspaceTypes[workspace.type] || workspace.type),
-          icon: '🏢',
+          iconSvg: lucideSvg('building-2', 15),
           action: () => {
             switchWorkspace(workspace.id);
             closeCommandPalette();
@@ -2795,7 +2814,7 @@ Refined result in ${targetName}:`;
           id: session.id,
           label: session.name,
           sub: t.paletteEntries(session.entries.length),
-          icon: '💬',
+          iconSvg: lucideSvg('message-square', 15),
           action: () => {
             switchSession(session.id);
             closeCommandPalette();
@@ -2804,12 +2823,13 @@ Refined result in ${targetName}:`;
         }));
 
     const actions = [
-      { id: 'new_session', label: t.paletteActionNewSession, icon: '➕', sub: t.paletteSubAction, action: () => { closeCommandPalette(); openSessionModal(); } },
-      { id: 'new_workspace', label: t.paletteActionNewWorkspace, icon: '📁', sub: t.paletteSubAction, action: () => { closeCommandPalette(); openWorkspaceModal(); } },
-      { id: 'glossary', label: t.paletteActionGlossary, icon: '🧠', sub: t.paletteSubDialog, action: () => { closeCommandPalette(); $('glossaryBtn').click(); } },
-      { id: 'toggle_lang', label: t.paletteActionToggleLang, icon: '🌐', sub: t.paletteSubSwitch, action: () => { closeCommandPalette(); $('langToggle').click(); } },
-      { id: 'toggle_theme', label: t.paletteActionToggleTheme, icon: '🌗', sub: t.paletteSubTheme, action: () => { closeCommandPalette(); $('themeToggle').click(); } },
-      { id: 'export', label: t.paletteActionExport, icon: '💾', sub: t.paletteSubData, action: () => { closeCommandPalette(); exportData(); } }
+      { id: 'new_session', label: t.paletteActionNewSession, iconSvg: lucideSvg('message-square-plus', 15), sub: t.paletteSubAction, action: () => { closeCommandPalette(); openSessionModal(); } },
+      { id: 'new_workspace', label: t.paletteActionNewWorkspace, iconSvg: lucideSvg('folder-plus', 15), sub: t.paletteSubAction, action: () => { closeCommandPalette(); openWorkspaceModal(); } },
+      { id: 'glossary', label: t.paletteActionGlossary, iconSvg: lucideSvg('brain', 15), sub: t.paletteSubDialog, action: () => { closeCommandPalette(); $('glossaryBtn').click(); } },
+      { id: 'settings', label: t.appSettingsTitle, iconSvg: lucideSvg('settings', 15), sub: t.paletteSubDialog, action: () => { closeCommandPalette(); $('appSettingsBtn').click(); } },
+      { id: 'toggle_lang', label: t.paletteActionToggleLang, iconSvg: lucideSvg('languages', 15), sub: t.paletteSubSwitch, action: () => { closeCommandPalette(); $('langToggle').click(); } },
+      { id: 'toggle_theme', label: t.paletteActionToggleTheme, iconSvg: lucideSvg('sun-moon', 15), sub: t.paletteSubTheme, action: () => { closeCommandPalette(); $('themeToggle').click(); } },
+      { id: 'export', label: t.paletteActionExport, iconSvg: lucideSvg('download', 15), sub: t.paletteSubData, action: () => { closeCommandPalette(); exportData(); } }
     ].filter(a => !query || a.label.toLowerCase().includes(query));
 
     const groups = [
@@ -2851,7 +2871,7 @@ Refined result in ${targetName}:`;
         const icon = document.createElement('span');
         icon.className = 'palette-item-icon';
         icon.setAttribute('aria-hidden', 'true');
-        icon.textContent = item.icon;
+        icon.innerHTML = item.iconSvg;
         const label = document.createElement('span');
         label.className = 'palette-item-label';
         label.textContent = item.label;
