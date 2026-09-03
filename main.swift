@@ -115,7 +115,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigati
         window.contentView!.addSubview(webView)
 
         // Drag-Zone über der separaten oberen macOS-Titelleiste.
-        let headerHeight: CGFloat = 38.0
+        let headerHeight: CGFloat = 32.0
         let dragFrame = NSRect(
             x: 80,
             y: contentBounds.height - headerHeight,
