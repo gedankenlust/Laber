@@ -114,9 +114,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigati
 
         window.contentView!.addSubview(webView)
 
-        // Schmale Drag-Zone ausschließlich im freien oberen Fensterrand.
-        // So überlagert die native View keine Web-Schaltflächen im Header.
-        let headerHeight: CGFloat = 20.0
+        // Drag-Zone über der separaten oberen macOS-Titelleiste.
+        let headerHeight: CGFloat = 38.0
         let dragFrame = NSRect(
             x: 80,
             y: contentBounds.height - headerHeight,

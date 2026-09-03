@@ -107,8 +107,9 @@ html, body {
 
 body {
   display: flex;
-  justify-content: center;
-  padding: 24px 20px 20px 20px;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px 20px 16px;
 }
 
 /* Lucide 1px Stroke Icons */
@@ -316,24 +317,92 @@ body {
   padding: 4px;
 }
 
+/* Dedicated macOS Window Titlebar */
+.window-titlebar {
+  width: 100%;
+  max-width: 1360px;
+  height: 38px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  -webkit-app-region: drag;
+  user-select: none;
+  margin-bottom: 6px;
+}
+
+.window-title-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.traffic-light-spacer {
+  width: 72px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.window-title-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+.window-title-main {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+}
+
+.window-title-dot {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.window-title-sub {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.window-title-right {
+  display: flex;
+  align-items: center;
+}
+
+.window-title-chip {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 3px 10px;
+  letter-spacing: 0.04em;
+}
+
 /* App Viewport & Elements */
 .app-viewport {
   width: 100%;
   max-width: 1360px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .header-bar {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
-  padding: 14px 24px;
+  padding: 14px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  -webkit-app-region: drag;
   user-select: none;
 }
 
